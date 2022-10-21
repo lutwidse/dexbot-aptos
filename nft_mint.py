@@ -1,5 +1,3 @@
-# Not sure if this implementation if fine. I'll check out when there is the next mint.
-
 import time
 from typing import Any, Dict
 
@@ -8,7 +6,6 @@ from aptos_sdk.account_address import AccountAddress
 from aptos_sdk.client import RestClient
 from aptos_sdk import ed25519
 
-import requests
 import cloudscraper
 from datetime import datetime
 
@@ -20,7 +17,7 @@ class BotClient(RestClient):
         txn_request = {
             "sender": f"{sender.address()}",
             "sequence_number": str(self.account_sequence_number(sender.address())),
-            "max_gas_amount": "10000",
+            "max_gas_amount": "1000",
             "gas_unit_price": "100",
             "expiration_timestamp_secs": str(int(time.time()) + 600),
             "payload": payload,
@@ -45,11 +42,13 @@ class BotClient(RestClient):
         )
         if response.status_code >= 400:
             print(f"{response.text}, {response.status_code}")
+        return response.json()["hash"]
+        # we have to fix the error {"message":"Invalid transaction: Type: InvariantViolation Code: VM_STARTUP_FAILURE","error_code":"vm_error","vm_error_code":2012}
 
 
 if __name__ == "__main__":
 
-    private_key = ed25519.PrivateKey.from_hex("0x00....")
+    private_key = ed25519.PrivateKey.from_hex("0x00")
     account = Account(
         account_address=AccountAddress.from_key(private_key.public_key()),
         private_key=private_key,
@@ -60,15 +59,14 @@ if __name__ == "__main__":
     print("\n=== Addresses ===")
     print(f"Account: {account.address()}")
 
-    mint_time = "2022/10/22 00:00:00"
+    # change
+    mint_time = "2022/10/22 01:00:00"
     element = datetime.strptime(mint_time, "%Y/%m/%d %H:%M:%S")
     tuple = element.timetuple()
-    target_timestamp = time.mktime(tuple)
-    now_timestamp = datetime.timestamp(datetime.now())
-
+    target_timestamp = round(time.mktime(tuple))
+    now_timestamp = round(datetime.timestamp(datetime.now()))
     while True:
         if (target_timestamp - now_timestamp) < 0:
-
             print("Collecting NFT data")
             scraper = cloudscraper.create_scraper(
                 delay=10,
@@ -76,7 +74,8 @@ if __name__ == "__main__":
                     "custom": "ScraperBot/1.0",
                 },
             )
-            target_nft_name = "bigfoot-town"
+            target_nft_name = "bigfoot-town-public"
+            # sometime bluemove leaks their contract address somehow
             resp = scraper.get(
                 f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[collection_slug][$eq]={target_nft_name}&sort[0]=start_time%3Aasc"
             ).json()
@@ -85,10 +84,11 @@ if __name__ == "__main__":
 
             print("Minting NFT")
             payload = {
-                "function": f"{mint_target_address}::factory::mint_nft",
-                "type_arguments": [],
-                "arguments": [],
                 "type": "entry_function_payload",
+                # change
+                "function": f"mint_target_address::factory::mint_with_quantity",
+                "type_arguments": [],
+                "arguments": ["2"],
             }
             txn_hash = rest_client.submit_transaction(account, payload)
             rest_client.wait_for_transaction(txn_hash)
