@@ -86,7 +86,7 @@ if __name__ == "__main__":
             payload = {
                 "type": "entry_function_payload",
                 # change
-                "function": f"mint_target_address::factory::mint_with_quantity",
+                "function": f"{mint_target_address}::factory::mint_with_quantity",
                 "type_arguments": [],
                 "arguments": ["2"],
             }
