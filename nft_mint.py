@@ -77,7 +77,7 @@ if __name__ == "__main__":
             target_nft_name = "bigfoot-town-public"
             # sometime bluemove leaks their contract address somehow
             resp = scraper.get(
-                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[collection_slug][$eq]={target_nft_name}&sort[0]=start_time%3Aasc"
+                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={target_nft_name}&sort[0]=start_time%3Aasc"
             ).json()
             mint_target_address = resp["data"][0]["attributes"]["module_address"]
             print(f"Mint addr : {mint_target_address}")
