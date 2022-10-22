@@ -16,43 +16,6 @@ MAX_GAS_AMOUNT = 3000
 TARGET_NFT_NAME = "bigfoot-town-public"
 TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
 
-
-class BotClient(RestClient):
-    def submit_transaction(self, sender: Account, payload: Dict[str, Any]) -> str:
-        txn_request = {
-            "sender": f"{sender.address()}",
-            "sequence_number": str(self.account_sequence_number(sender.address())),
-            # change
-            "max_gas_amount": MAX_GAS_AMOUNT,
-            "gas_unit_price": "100",
-            "expiration_timestamp_secs": str(int(time.time()) + 600),
-            "payload": payload,
-        }
-        response = self.client.post(
-            f"{NODE_URL}/transactions/encode_submission", json=txn_request
-        )
-        if response.status_code >= 400:
-            print(f"{response.text}, {response.status_code}")
-
-        to_sign = bytes.fromhex(response.json()[2:])
-        signature = sender.sign(to_sign)
-        txn_request["signature"] = {
-            "type": "ed25519_signature",
-            "public_key": f"{sender.public_key()}",
-            "signature": f"{signature}",
-        }
-
-        headers = {"Content-Type": "application/json"}
-        response = self.client.post(
-            f"{NODE_URL}/transactions", headers=headers, json=txn_request
-        )
-        if response.status_code >= 400:
-            print(f"{response.text}, {response.status_code}")
-        return response.json()["hash"]
-        # we have to fix the error {"message":"Invalid transaction: Type: InvariantViolation Code: VM_STARTUP_FAILURE","error_code":"vm_error","vm_error_code":2012}
-        # this seems RPC side problem
-
-
 if __name__ == "__main__":
 
     private_key = ed25519.PrivateKey.from_hex(
@@ -63,7 +26,7 @@ if __name__ == "__main__":
         private_key=private_key,
     )
 
-    rest_client = BotClient(NODE_URL)
+    rest_client = RestClient(NODE_URL)
 
     print("\n=== Addresses ===")
     print(f"Account: {account.address()}")
