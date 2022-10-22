@@ -12,15 +12,16 @@ from datetime import datetime
 NODE_URL = "https://rpc.ankr.com/http/aptos/v1"
 
 # change
+PRIVATE_KEY = (
+    "0x00...."  # HARDCODING IS BAD! PLEASE CHANGE IT TO THE ENVIRONMENT VARIABLE OR
+)
 MAX_GAS_AMOUNT = 3000
 TARGET_NFT_NAME = "bigfoot-town-public"
 TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
 
 if __name__ == "__main__":
 
-    private_key = ed25519.PrivateKey.from_hex(
-        "0x00...."
-    )
+    private_key = ed25519.PrivateKey.from_hex(PRIVATE_KEY)
     account = Account(
         account_address=AccountAddress.from_key(private_key.public_key()),
         private_key=private_key,
