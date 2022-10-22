@@ -17,7 +17,7 @@ PRIVATE_KEY = (
 )
 MAX_GAS_AMOUNT = 3000
 TARGET_NFT_NAME = "bigfoot-town-public"
-TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
+TARGET_NFT_MINT_TIME = "2022/10/23 02:13:00"
 
 if __name__ == "__main__":
 
@@ -36,9 +36,9 @@ if __name__ == "__main__":
     element = datetime.strptime(TARGET_NFT_MINT_TIME, "%Y/%m/%d %H:%M:%S")
     tuple = element.timetuple()
     target_timestamp = round(time.mktime(tuple))
-    now_timestamp = round(datetime.timestamp(datetime.now()))
 
     while True:
+        now_timestamp = round(datetime.timestamp(datetime.now()))
         if (target_timestamp - now_timestamp) < 0:
             print("Collecting NFT data")
             scraper = cloudscraper.create_scraper(

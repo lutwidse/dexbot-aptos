@@ -54,9 +54,9 @@ if __name__ == "__main__":
     element = datetime.strptime(TARGET_NFT_MINT_TIME, "%Y/%m/%d %H:%M:%S")
     tuple = element.timetuple()
     target_timestamp = round(time.mktime(tuple))
-    now_timestamp = round(datetime.timestamp(datetime.now()))
 
     while True:
+        now_timestamp = round(datetime.timestamp(datetime.now()))
         if (target_timestamp - now_timestamp) < 0:
             print("Collecting NFT data")
             scraper = cloudscraper.create_scraper(
