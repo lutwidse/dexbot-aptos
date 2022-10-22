@@ -17,7 +17,7 @@ PRIVATE_KEY = (
 )
 MAX_GAS_AMOUNT = 3000
 TARGET_NFT_NAME = "bigfoot-town-public"
-TARGET_NFT_MINT_TIME = "2022/10/23 02:13:00"
+TARGET_NFT_MINT_TIME = "2022/10/23 01:00:00"
 
 if __name__ == "__main__":
 
