@@ -28,6 +28,10 @@ from datetime import datetime
 
 NODE_URL = "https://rpc.ankr.com/http/aptos/v1"
 
+# change
+MAX_GAS_AMOUNT = 3000
+TARGET_NFT_NAME = "bigfoot-town-public"
+TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
 
 class BotClient(RestClient):
     def submit_bcs_transaction(self, signed_transaction: SignedTransaction) -> str:
@@ -44,7 +48,7 @@ class BotClient(RestClient):
 
 if __name__ == "__main__":
 
-    private_key = ed25519.PrivateKey.from_hex("0x00")
+    private_key = ed25519.PrivateKey.from_hex("0x00....")
     account = Account(
         account_address=AccountAddress.from_key(private_key.public_key()),
         private_key=private_key,
@@ -56,8 +60,7 @@ if __name__ == "__main__":
     print(f"Account: {account.address()}")
 
     # change
-    mint_time = "2022/10/22 01:00:00"
-    element = datetime.strptime(mint_time, "%Y/%m/%d %H:%M:%S")
+    element = datetime.strptime(TARGET_NFT_MINT_TIME, "%Y/%m/%d %H:%M:%S")
     tuple = element.timetuple()
     target_timestamp = round(time.mktime(tuple))
     now_timestamp = round(datetime.timestamp(datetime.now()))
@@ -71,10 +74,9 @@ if __name__ == "__main__":
                     "custom": "ScraperBot/1.0",
                 },
             )
-            target_nft_name = "bigfoot-town-public"
             # sometime bluemove leaks their contract address somehow
             resp = scraper.get(
-                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={target_nft_name}&sort[0]=start_time%3Aasc"
+                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={TARGET_NFT_NAME}&sort[0]=start_time%3Aasc"
             ).json()
             mint_target_address = resp["data"][0]["attributes"]["module_address"]
             print(f"Mint addr : {mint_target_address}")
@@ -98,7 +100,7 @@ if __name__ == "__main__":
                 account.address(),
                 rest_client.account_sequence_number(account.address()),
                 TransactionPayload(payload),
-                1000,
+                MAX_GAS_AMOUNT,
                 100,
                 int(time.time()) + 600,
                 rest_client.chain_id,

@@ -11,13 +11,19 @@ from datetime import datetime
 
 NODE_URL = "https://rpc.ankr.com/http/aptos/v1"
 
+# change
+MAX_GAS_AMOUNT = 3000
+TARGET_NFT_NAME = "bigfoot-town-public"
+TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
+
 
 class BotClient(RestClient):
     def submit_transaction(self, sender: Account, payload: Dict[str, Any]) -> str:
         txn_request = {
             "sender": f"{sender.address()}",
             "sequence_number": str(self.account_sequence_number(sender.address())),
-            "max_gas_amount": "1000",
+            # change
+            "max_gas_amount": MAX_GAS_AMOUNT,
             "gas_unit_price": "100",
             "expiration_timestamp_secs": str(int(time.time()) + 600),
             "payload": payload,
@@ -44,11 +50,14 @@ class BotClient(RestClient):
             print(f"{response.text}, {response.status_code}")
         return response.json()["hash"]
         # we have to fix the error {"message":"Invalid transaction: Type: InvariantViolation Code: VM_STARTUP_FAILURE","error_code":"vm_error","vm_error_code":2012}
+        # this seems RPC side problem
 
 
 if __name__ == "__main__":
 
-    private_key = ed25519.PrivateKey.from_hex("0x00")
+    private_key = ed25519.PrivateKey.from_hex(
+        "0x00...."
+    )
     account = Account(
         account_address=AccountAddress.from_key(private_key.public_key()),
         private_key=private_key,
@@ -60,11 +69,11 @@ if __name__ == "__main__":
     print(f"Account: {account.address()}")
 
     # change
-    mint_time = "2022/10/22 01:00:00"
-    element = datetime.strptime(mint_time, "%Y/%m/%d %H:%M:%S")
+    element = datetime.strptime(TARGET_NFT_MINT_TIME, "%Y/%m/%d %H:%M:%S")
     tuple = element.timetuple()
     target_timestamp = round(time.mktime(tuple))
     now_timestamp = round(datetime.timestamp(datetime.now()))
+
     while True:
         if (target_timestamp - now_timestamp) < 0:
             print("Collecting NFT data")
@@ -74,15 +83,15 @@ if __name__ == "__main__":
                     "custom": "ScraperBot/1.0",
                 },
             )
-            target_nft_name = "bigfoot-town-public"
             # sometime bluemove leaks their contract address somehow
             resp = scraper.get(
-                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={target_nft_name}&sort[0]=start_time%3Aasc"
+                f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={TARGET_NFT_NAME}&sort[0]=start_time%3Aasc"
             ).json()
             mint_target_address = resp["data"][0]["attributes"]["module_address"]
             print(f"Mint addr : {mint_target_address}")
 
             print("Minting NFT")
+
             payload = {
                 "type": "entry_function_payload",
                 # change
