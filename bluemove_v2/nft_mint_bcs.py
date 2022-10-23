@@ -38,6 +38,7 @@ MAX_GAS_AMOUNT = 330000  # 0.33 APT
 # TARGET_NFT_NAME = "bigfoot-town-public"
 TARGET_NFT_MINT_TIME = "2022/10/22 01:00:00"
 
+MINT_TIME_DURATION = 5
 
 if __name__ == "__main__":
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         block_timestamp = int(
             requests.get(f"{NODE_URL}/transactions").json()[-1]["timestamp"][:-6]
         )
-        if (target_timestamp - block_timestamp) < 5:
+        if (target_timestamp - block_timestamp) < MINT_TIME_DURATION:
 
             print("Collecting NFT data")
 
