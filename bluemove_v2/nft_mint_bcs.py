@@ -63,7 +63,7 @@ if __name__ == "__main__":
             requests.get(f"{NODE_URL}/transactions").json()[-1]["timestamp"][:-6]
         )
         mint_time = (target_timestamp - block_timestamp)
-        if mint_time < MINT_TIME_DURATION and mint_time > -MINT_TIME_DURATION:
+        if -MINT_TIME_DURATION < mint_time < MINT_TIME_DURATION:
 
             print("Collecting NFT data")
 
