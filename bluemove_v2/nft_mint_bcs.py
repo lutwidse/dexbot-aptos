@@ -28,7 +28,7 @@ from datetime import datetime
 
 import requests
 
-NODE_URL = "https://rpc.ankr.com/http/aptos/v1"
+NODE_URL = "https://aptos.m0n4.com/http/aptos/v1"
 
 # change
 PRIVATE_KEY = (
@@ -67,20 +67,20 @@ if __name__ == "__main__":
 
             print("Collecting NFT data")
 
-            """scraper = cloudscraper.create_scraper(
+            scraper = cloudscraper.create_scraper(
                 delay=10,
                 browser={
                     "custom": "ScraperBot/1.0",
                 },
             )
-            # sometime bluemove leaks their contract address somehow
+            # sometime bluemove leaks their contract address somehow, solve the puzzle yourself
             resp = scraper.get(
                 f"https://aptos-mainnet-api.bluemove.net/api/launchpads?filters[launchpad_slug][$eq]={TARGET_NFT_NAME}&sort[0]=start_time%3Aasc"
             ).json()
             mint_target_address = resp["data"][0]["attributes"]["module_address"]
             print(f"Mint addr : {mint_target_address}")
 
-            print("Minting NFT")"""
+            print("Minting NFT")
 
             # change
             transaction_arguments = [
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
             # change
             payload = EntryFunction.natural(
-                "0x00....::factory",
+                f"{mint_target_address}::factory",
                 "mint_with_quantity",
                 [],
                 transaction_arguments,
@@ -111,4 +111,4 @@ if __name__ == "__main__":
             )
             signed_transaction = SignedTransaction(raw_transaction, authenticator)
             txn_hash = rest_client.submit_bcs_transaction(signed_transaction)
-            # rest_client.wait_for_transaction(txn_hash)
+            rest_client.wait_for_transaction(txn_hash)
