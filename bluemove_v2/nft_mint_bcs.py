@@ -42,7 +42,7 @@ MINT_TIME_DURATION = 5
 
 if __name__ == "__main__":
 
-    private_key = ed25519.PrivateKey.from_hex("0x00....")
+    private_key = ed25519.PrivateKey.from_hex(PRIVATE_KEY)
     account = Account(
         account_address=AccountAddress.from_key(private_key.public_key()),
         private_key=private_key,
