@@ -28,7 +28,7 @@ from datetime import datetime
 
 import requests
 
-NODE_URL = "https://aptos.m0n4.com/http/aptos/v1"
+NODE_URL = "https://fullnode.devnet.aptoslabs.com/v1/"
 
 # change
 PRIVATE_KEY = (
